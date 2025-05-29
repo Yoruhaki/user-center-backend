@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.7.8
+    hooks:
+      - id: uv-lock
+      - id: uv-export
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.11.11
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        # Uncomment to automatically fix linting errors.
+        # args: [ --fix ]
+      # Run the formatter.
+      # - id: ruff-format
+  # - repo: https://github.com/PyCQA/eradicate
+  #   rev: Version 3.0.0
+  #   hooks:
+  #     # Removes commented-out code from Python files.
+  #     - id: eradicate
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.8.2
+    hooks:
+      # Run commit linting.
+      - id: commitizen
+        stages: [commit-msg]
+      # Run branch linting.
+      - id: commitizen-branch
+        stages: [pre-push]

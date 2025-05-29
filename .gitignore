@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Python-generated files
+.ruff_cache/
+*.py[oc]
+*.egg-info
