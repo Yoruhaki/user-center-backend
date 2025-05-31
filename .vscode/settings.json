@@ -1,5 +1,12 @@
 {
     "cSpell.words": [
-        "commitizen"
+        "aerich",
+        "asyncpg",
+        "commitizen",
+        "httpx",
+        "pyreadline",
+        "sanic",
+        "setuptools",
+        "tracerite"
     ]
 }

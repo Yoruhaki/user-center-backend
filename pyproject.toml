@@ -1,20 +1,42 @@
 [project]
-name = "python-uv-init"
+name = "user-center-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Fastapi user center backend. Handles auth, permissions, and secure user data."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "commitizen>=4.8.2",
+    "asyncpg>=0.30.0",
+    "fastapi[all]>=0.115.12",
 ]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.2.0",
+    "commitizen>=4.8.2",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=1.0.0",
+    "pytest-cov>=6.1.1",
+    "aerich[toml]>=0.9.0",
 ]
 
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "pep440"
+version_provider = "uv"
+update_changelog_on_bump = true
+major_version_zero = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.aerich]
+tortoise_orm = "src.app.core.database.TORTOISE_CONFIG"
+location = "./migrations"
+src_folder = "./."
+
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
 exclude = [
     ".lock",
     ".toml",
@@ -50,11 +72,3 @@ exclude = [
     "venv",
     "__pycache__",
 ]
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "v$version"
-version_scheme = "pep440"
-version_provider = "uv"
-update_changelog_on_bump = true
-major_version_zero = true
