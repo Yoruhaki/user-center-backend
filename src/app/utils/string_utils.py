@@ -27,5 +27,3 @@ class StringUtils(metaclass=NoInstantiableMeta):
                 return True
 
         return False
-
-

@@ -5,8 +5,8 @@ description = "Fastapi user center backend. Handles auth, permissions, and secur
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "asyncpg>=0.30.0",
     "fastapi[all]>=0.115.12",
+    "tortoise-orm[asyncpg]>=0.25.0",
 ]
 
 [dependency-groups]
@@ -32,9 +32,31 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.aerich]
-tortoise_orm = "src.app.core.database.TORTOISE_CONFIG"
+tortoise_orm = "src.app.core.database.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "src/app/utils/*.py",
+    "src/tests/**/*.py"
+]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "^#.*",
+    "^$",
+    "raise NotImplementedError",
+    "print"
+]
+
+[tool.coverage.html]
+directory = "reports/coverage/coverage_html"
+
+[tool.coverage.xml]
+output = "reports/coverage/coverage.xml"
 
 [tool.ruff]
 exclude = [

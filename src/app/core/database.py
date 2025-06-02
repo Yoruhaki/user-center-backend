@@ -3,11 +3,12 @@ from contextlib import asynccontextmanager
 from tortoise.contrib.fastapi import RegisterTortoise
 
 MODELS = [
-    "src.app.models.user",
+    "src.app.models.users",
     "aerich.models",
 ]
 
-TORTOISE_CONFIG = {
+TORTOISE_ORM = {
+    "db_url": {},
     "connections": {
         "default": {
             "engine": "tortoise.backends.asyncpg",
@@ -35,7 +36,7 @@ TORTOISE_CONFIG = {
 async def register_postgres(app):
     async with RegisterTortoise(
             app,
-            config=TORTOISE_CONFIG,
+            config=TORTOISE_ORM,
             generate_schemas=True,
     ):
         yield
