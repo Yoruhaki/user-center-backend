@@ -1,6 +1,6 @@
 import pytest
 
-from src.app.utils import StringUtils
+from app.utils import StringUtils
 
 
 def test_is_any_blank():
