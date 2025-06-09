@@ -4,8 +4,9 @@ from contextlib import asynccontextmanager
 import pytest
 from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
+import pytest_asyncio
 
-from app.main import app
+from src.app.main import app
 
 ClientManagerType = AsyncGenerator[AsyncClient, None]
 
@@ -19,7 +20,7 @@ async def client_manager(app, base_url="http://test/api/v1", **kw) -> ClientMana
             yield c
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture
 async def client() -> ClientManagerType:
     async with client_manager(app) as c:
         yield c

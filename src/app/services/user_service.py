@@ -11,6 +11,7 @@ from src.app.schemas import SafetyUser
 from src.app.utils import NoInstantiableMeta, StringUtils
 from datetime import datetime
 from src.app.constants.user_constants import USER_LOGIN_STATE
+from src.app.core import settings
 
 
 class UserService(metaclass=NoInstantiableMeta):
@@ -18,7 +19,7 @@ class UserService(metaclass=NoInstantiableMeta):
     用户服务
     """
 
-    __SALT = "yoruhaki"
+    __SALT = settings.salt
 
     @staticmethod
     @atomic()
@@ -35,7 +36,8 @@ class UserService(metaclass=NoInstantiableMeta):
             int: 用户ID
 
         Raises:
-            BusinessException:
+            BusinessException: 参数为空 | 用户账号过短 | 用户密码过短 | 账号存在特殊符号
+                            | 密码与确认密码不一致 | 账号和密码不匹配 | 账号重复
         """
 
         # 1. 校验
@@ -83,7 +85,7 @@ class UserService(metaclass=NoInstantiableMeta):
             SafetyUser: 用户信息(脱敏)
 
         Raises:
-            BusinessException:
+            BusinessException: 参数为空 | 用户账号过短 | 用户密码过短 | 账号存在特殊符号 | 账号和密码不匹配
         """
 
         # 1. 校验
@@ -117,7 +119,7 @@ class UserService(metaclass=NoInstantiableMeta):
         return safety_user
 
     @staticmethod
-    async def get_current_user_by_id(user_id: int) -> SafetyUser:
+    async def get_user_by_id(user_id: int) -> SafetyUser:
         """
         通过用户ID从数据库查询用户信息
 
@@ -128,12 +130,13 @@ class UserService(metaclass=NoInstantiableMeta):
             SafetyUser: 用户信息(脱敏)
 
         Raises:
-            BusinessException: code: params_error; description: 用户不存在
+            BusinessException: 用户不存在
         """
 
         # 查询用户是否存在
         user = await Users.get_or_none(id=user_id)
         if user is None:
+            # TODO: 修改描述，使其符合异常情况
             raise BusinessException(StatusCode.PARAMS_ERROR, "用户不存在")
 
         # 用户信息脱敏
@@ -175,14 +178,15 @@ class UserService(metaclass=NoInstantiableMeta):
             user_id (int): 用户ID
 
         Returns:
-            bool: 是否删除成功
+            bool: 用户是否删除成功(逻辑)
         """
 
         # 逻辑删除用户
-        result = await Users.filter(id=user_id).update(is_deleted=True, delete_time=datetime.now())
-        print(result)
+        is_deleted = bool(await Users.filter(id=user_id).update(is_deleted=True, delete_time=datetime.now()))
+        if not is_deleted:
+            raise BusinessException(StatusCode.PARAMS_ERROR, "用户不存在")
 
-        return bool(result)
+        return is_deleted
 
     @staticmethod
     def user_logout(request: Request) -> bool:
@@ -193,10 +197,12 @@ class UserService(metaclass=NoInstantiableMeta):
             request (Request): 请求实例
 
         Returns:
-            bool: 是否成功注销
+            bool: 用户是否成功注销
         """
 
         # 从会话中删除用户信息
-        request.session.pop(USER_LOGIN_STATE, 0)
+        is_logout = bool(request.session.pop(USER_LOGIN_STATE, ""))
+        if not is_logout:
+            raise BusinessException(StatusCode.PARAMS_ERROR, "用户未登录")
 
-        return True
+        return is_logout

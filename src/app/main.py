@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from src.app.routers import api_routers
@@ -17,7 +18,7 @@ from tortoise.contrib.fastapi import RegisterTortoise
 async def lifespan_test(web_app: FastAPI) -> AsyncGenerator[None, None]:
     config = generate_config(
         "sqlite://:memory:",
-        app_modules={"models": ["app.models.users"]},
+        app_modules={"models": ["src.app.models.users"]},
         testing=True,
         connection_label="models",
     )
@@ -48,8 +49,15 @@ app = FastAPI(lifespan=app_lifespan)
 app.add_middleware(
     SessionMiddleware,
     secret_key="your-secret-key-keep-it-safe",  # 替换为你的实际密钥
+    same_site="None; Secure",
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), "static")
 mount_exception_handler(app)
 app.include_router(api_routers)

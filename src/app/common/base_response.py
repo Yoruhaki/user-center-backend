@@ -1,12 +1,13 @@
 from fastapi.responses import Response
 from pydantic import BaseModel
 
+type Json = dict[str, Json] | list[Json] | str | int | float | bool | None
 
 class BaseResponse[T](BaseModel):
     code: int
     data: T
-    message: str
-    description: str
+    message: Json
+    description: Json
 
 
 class BaseHTTPResponse[T](Response):

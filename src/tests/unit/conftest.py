@@ -3,6 +3,6 @@ from tortoise.contrib.test import initializer, finalizer
 
 @pytest.fixture(scope="session", autouse=True)
 def initialize_tests(request):
-    initializer(["app.models.users"], db_url="sqlite://:memory:", app_label="models")
+    initializer(["src.app.models.users"], db_url="sqlite://:memory:", app_label="models")
     request.addfinalizer(finalizer)
 

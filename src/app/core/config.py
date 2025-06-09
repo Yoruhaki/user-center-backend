@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     database_password: str = "123456"
     database_name: str = "user_center"
 
+    auth_key: str = "use to generate jwt"
+    salt: str = "password encrypt salt"
+
     model_config = SettingsConfigDict(
         env_file=(".env.dev", ".env.prod")
     )

@@ -1,23 +1,13 @@
+from dataclasses import dataclass
 from enum import Enum
 
+type Json = dict[str, Json] | list[Json] | str | int | float | bool | None
 
+@dataclass(frozen=True)
 class Code:
-    def __init__(self, code: int, message: str, description: str) -> None:
-        self.__code = code
-        self.__message = message
-        self.__description = description
-
-    @property
-    def code(self) -> int:
-        return self.__code
-
-    @property
-    def message(self) -> str:
-        return self.__message
-
-    @property
-    def description(self) -> str:
-        return self.__description
+    code: int
+    message: Json
+    description: Json
 
 
 class StatusCode(Enum):

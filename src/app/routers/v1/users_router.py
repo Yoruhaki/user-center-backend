@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.requests import Request
 
 from src.app.common import ResultUtils, BaseResponse, StatusCode
@@ -8,7 +8,7 @@ from src.app.schemas import UserRegisterRequest, UserLoginRequest, SafetyUser
 from src.app.services import UserService
 from src.app.utils import StringUtils
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/user", tags=["users"])
 
 
 def is_admin(request: Request) -> bool:
@@ -46,7 +46,10 @@ async def user_register(user_register_request: UserRegisterRequest | None = None
         user_register_request (UserRegisterRequest | None): 用户注册信息请求体
 
     Returns:
-        BaseResponse[int]:
+        BaseResponse[int]: 用户ID
+
+    Raises:
+        BusinessException: 注册信息为空 | 参数为空
     """
 
     if user_register_request is None:
@@ -72,11 +75,14 @@ async def user_login(
     用户登录路由
 
     Args:
-        request (Request):
-        user_login_request (UserLoginRequest | None):
+        request (Request): 请求实例
+        user_login_request (UserLoginRequest | None): 用户登录信息
 
     Returns:
-        BaseResponse[SafetyUser]:
+        BaseResponse[SafetyUser]: 用户信息(脱敏)
+
+    Raises:
+                BusinessException: 登录信息为空 | 参数为空
     """
 
     if user_login_request is None:
@@ -98,10 +104,13 @@ async def get_current_user(request: Request) -> BaseResponse[SafetyUser]:
     获取当前用户信息路由
 
     Args:
-        request (Request):
+        request (Request): 请求实例
 
     Returns:
-        BaseResponse[SafetyUser]:
+        BaseResponse[SafetyUser]: 用户信息(脱敏)
+
+    Raises:
+        BusinessException: 用户未登录
     """
 
     # 从会话中获取用户凭证
@@ -114,21 +123,21 @@ async def get_current_user(request: Request) -> BaseResponse[SafetyUser]:
 
     # 根据用户ID从数据库中查询用户信息
     user_id = safety_user_session.id
-    safety_user = await UserService.get_current_user_by_id(user_id)
+    safety_user = await UserService.get_user_by_id(user_id)
 
     return ResultUtils.success(safety_user)
 
 
 @router.post("/logout")
-async def user_logout(request: Request) -> BaseResponse[int]:
+async def user_logout(request: Request) -> BaseResponse[bool]:
     """
     用户注销路由
 
     Args:
-        request (Request):
+        request (Request): 请求实例
 
     Returns:
-        BaseResponse[int]:
+        BaseResponse[bool]: 用户是否完成注销
     """
 
     is_logout = UserService.user_logout(request)
@@ -141,11 +150,14 @@ async def search_users(request: Request, username: str = "") -> BaseResponse[lis
     搜索用户信息路由
 
     Args:
-        request (Request):
-        username (str):
+        request (Request): 请求实例
+        username (str): 用户名
 
     Returns:
-        BaseResponse[list[SafetyUser]]:
+        BaseResponse[list[SafetyUser]]: 用户信息列表(脱敏)
+
+    Raises:
+        BusinessException: 用户非管理员
     """
 
     # 权限校验
@@ -163,11 +175,14 @@ async def delete_user(request: Request, user_id: int = 0) -> BaseResponse[bool]:
     逻辑删除用户路由
 
     Args:
-        request (Request):
-        user_id (int):
+        request (Request): 请求实例
+        user_id (int): 用户ID
 
     Returns:
-        BaseResponse[bool]:
+        BaseResponse[bool]: 用户是否被删除(逻辑)
+
+    Raises:
+        BusinessException: 用户非管理员 | 删除用户ID为空 | 删除用户ID不为正整数
     """
 
     # 权限校验
@@ -177,7 +192,7 @@ async def delete_user(request: Request, user_id: int = 0) -> BaseResponse[bool]:
     if user_id is None:
         raise BusinessException(StatusCode.NULL_ERROR, "删除用户ID为空")
     if user_id <= 0:
-        raise BusinessException(StatusCode.PARAMS_ERROR, "删除用户ID不为正数")
+        raise BusinessException(StatusCode.PARAMS_ERROR, "删除用户ID不为正整数")
 
     is_deleted = await UserService.delete_user_by_id(user_id)
 

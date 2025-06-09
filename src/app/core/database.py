@@ -14,7 +14,6 @@ MODELS = [
 
 # 数据库连接配置
 TORTOISE_ORM = {
-    # 数据库连接池
     "connections": {
         "user_center_conn": {
             "engine": "tortoise.backends.asyncpg",
@@ -27,12 +26,9 @@ TORTOISE_ORM = {
             }
         }
     },
-    # 应用配置
     "apps": {
         "user_center_app": {
-            # 映射类
             "models": MODELS,
-            # 连接池
             "default_connection": "user_center_conn"
         }
     },

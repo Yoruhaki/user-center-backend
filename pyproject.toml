@@ -1,22 +1,24 @@
 [project]
 name = "user-center-backend"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fastapi user center backend. Handles auth, permissions, and secure user data."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[all]>=0.115.12",
-    "tortoise-orm[asyncpg]>=0.25.0",
+    "tortoise-orm[asyncpg]>=0.25.1",
 ]
 
 [dependency-groups]
 dev = [
     "pre-commit>=4.2.0",
     "commitizen>=4.8.2",
-    "pytest>=8.3.5",
-    "pytest-asyncio>=1.0.0",
-    "pytest-cov>=6.1.1",
     "aerich[toml]>=0.9.0",
+    "cryptography>=45.0.3",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.1.1",
+    "pytest-asyncio>=1.0.0",
+    "asgi-lifespan>=2.1.0",
 ]
 
 [tool.commitizen]
@@ -39,7 +41,7 @@ src_folder = "./."
 [tool.coverage.run]
 branch = true
 omit = [
-    "src/app/utils/*.py",
+#    "src/app/utils/*.py",
     "src/tests/**/*.py"
 ]
 
