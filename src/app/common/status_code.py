@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 
-type Json = dict[str, Json] | list[Json] | str | int | float | bool | None
+from .common_types import Json
+
 
 @dataclass(frozen=True)
 class Code:

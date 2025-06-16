@@ -1,8 +1,10 @@
-import pytest
+from pytest import fixture
 from tortoise.contrib.test import initializer, finalizer
 
-@pytest.fixture(scope="session", autouse=True)
-def initialize_tests(request):
-    initializer(["src.app.models.users"], db_url="sqlite://:memory:", app_label="models")
-    request.addfinalizer(finalizer)
+from src.app.core import ORM_MODELS
 
+
+@fixture(scope="session", autouse=True)
+def initialize_tests(request):
+    initializer(ORM_MODELS, db_url="sqlite://:memory:", app_label="models")
+    request.addfinalizer(finalizer)

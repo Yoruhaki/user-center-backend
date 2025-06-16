@@ -1,3 +1,4 @@
-from .users import Users
+from .tag import Tag
+from .user import User
 
-__all__ = ["Users"]
+__all__ = ["User", "Tag"]

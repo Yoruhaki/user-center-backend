@@ -3,9 +3,9 @@ from tortoise import BaseDBAsyncClient
 
 async def upgrade(db: BaseDBAsyncClient) -> str:
     return """
-        DROP INDEX IF EXISTS "uid_users_user_ac_c10905";"""
+        ALTER TABLE "user" ADD "user_profile" VARCHAR(512);"""
 
 
 async def downgrade(db: BaseDBAsyncClient) -> str:
     return """
-        CREATE UNIQUE INDEX IF NOT EXISTS "uid_users_user_ac_c10905" ON "users" ("user_account");"""
+        ALTER TABLE "user" DROP COLUMN "user_profile";"""
