@@ -1,16 +1,21 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from tortoise.contrib.fastapi import RegisterTortoise
 from fastapi import FastAPI
+from tortoise.contrib.fastapi import RegisterTortoise
 
 from .config import settings
+from src.app import models
+from src.app.utils import ModuleUtils
+
+from itertools import chain
 
 # 映射类加载列表
-MODELS = [
-    "src.app.models.users",
-    "aerich.models",
-]
+ORM_MODELS = list(filter(
+    lambda x: "base" not in x,
+    ModuleUtils.get_modules_import_path(models.__path__[0], models.__name__)
+))
+MODELS = chain(ORM_MODELS, ["aerich.models"])
 
 # 数据库连接配置
 TORTOISE_ORM = {
@@ -18,22 +23,22 @@ TORTOISE_ORM = {
         "user_center_conn": {
             "engine": "tortoise.backends.asyncpg",
             "credentials": {
-                "host": settings.database_host,
-                "port": settings.database_port,
-                "user": settings.database_user,
-                "password": settings.database_password,
-                "database": settings.database_name,
-            }
-        }
+                "host": settings.DATABASE_HOST,
+                "port": settings.DATABASE_PORT,
+                "user": settings.DATABASE_USER,
+                "password": settings.DATABASE_PASSWORD,
+                "database": settings.DATABASE_NAME,
+            },
+        },
     },
     "apps": {
         "user_center_app": {
             "models": MODELS,
             "default_connection": "user_center_conn"
-        }
+        },
     },
     "use_tz": False,
-    "timezone": "Asia/Shanghai"
+    "timezone": "Asia/Shanghai",
 }
 
 

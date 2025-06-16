@@ -1,5 +1,6 @@
-from src.app.utils.metaclass_utils import NoInstantiableMeta
-from src.app.utils.module_utils import ModuleUtils
-from src.app.utils.string_utils import StringUtils
+from .collection_utils import CollectionUtils
+from .metaclass_utils import NoInstantiableMeta
+from .module_utils import ModuleUtils
+from .string_utils import StringUtils
 
-__all__ = ["NoInstantiableMeta", "StringUtils", "ModuleUtils"]
+__all__ = ["NoInstantiableMeta", "StringUtils", "ModuleUtils", "CollectionUtils"]

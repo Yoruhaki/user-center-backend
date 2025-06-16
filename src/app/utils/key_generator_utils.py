@@ -1,5 +1,5 @@
-from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec
 
 # 生成基于 secp256r1 曲线的私钥（ES256 专用）
 private_key = ec.generate_private_key(ec.SECP256R1())
@@ -12,7 +12,7 @@ with open("es256_private_key.pem", "wb") as f:
     private_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()  # 不加密私钥（根据需要可添加密码）
+        encryption_algorithm=serialization.NoEncryption(),  # 不加密私钥（根据需要可添加密码）
     )
     f.write(private_pem)
 
@@ -20,7 +20,7 @@ with open("es256_private_key.pem", "wb") as f:
 with open("es256_public_key.pem", "wb") as f:
     public_pem = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
     )
     f.write(public_pem)
 

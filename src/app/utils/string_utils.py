@@ -1,3 +1,6 @@
+from json import JSONDecodeError, loads
+from typing import Any
+
 from .metaclass_utils import NoInstantiableMeta
 
 
@@ -45,3 +48,31 @@ class StringUtils(metaclass=NoInstantiableMeta):
         """
 
         return not StringUtils.is_any_blank(*strings)
+
+    @staticmethod
+    def is_str_instance(item: Any) -> bool:
+        return isinstance(item, str)
+
+    @staticmethod
+    def is_string_list_json_safe(json_str: str) -> bool:
+        if not isinstance(json_str, str):
+            raise TypeError(f"输入参数需为 str 类型, {json_str} 的类型为 {type(json_str)}")
+        try:
+            data = loads(json_str)
+            if not (isinstance(data, list) and all(map(StringUtils.is_str_instance, data))):
+                return False
+        except JSONDecodeError:
+            return False
+        return True
+
+    @staticmethod
+    def json_to_string_list(json_str: str) -> list[str]:
+        if not isinstance(json_str, str):
+            raise TypeError(f"输入参数需为 str 类型, {json_str} 的类型为 {type(json_str)}")
+        try:
+            data = loads(json_str)
+            if not (isinstance(data, list) and all(map(StringUtils.is_str_instance, data))):
+                raise ValueError(f'"{json_str}" 不是序列化的字符串列表')
+        except JSONDecodeError:
+            raise ValueError(f'"{json_str}" 无法反序列化')
+        return data

@@ -17,7 +17,10 @@ class SoftDeleteQuerySet[T: Model](QuerySet[T]):
         # 自动添加is_deleted=False过滤条件
         if hasattr(model, "_meta"):
             meta = getattr(model, "_meta")
-            if hasattr(meta, "fields_map") and self._delete_flag_field in meta.fields_map:
+            if (
+                    hasattr(meta, "fields_map")
+                    and self._delete_flag_field in meta.fields_map
+            ):
                 self._q_objects.append(Q(**{self._delete_flag_field: False}))
 
     def hard_delete(self) -> DeleteQuery:
@@ -29,10 +32,7 @@ class SoftDeleteQuerySet[T: Model](QuerySet[T]):
         now = datetime.now()
         # 使用update方法批量更新
         return self.update(
-            **{
-                self._delete_flag_field: True,
-                self._delete_date_field: now
-            }
+            **{self._delete_flag_field: True, self._delete_date_field: now}
         )
 
     @override
@@ -45,11 +45,11 @@ class SoftDeleteQuerySet[T: Model](QuerySet[T]):
         raw_queryset = QuerySet(self.model)
         # 复制当前查询集的所有过滤条件，但排除is_deleted=False
         for key, value in self._filter_kwargs.items():
-            if key != 'is_deleted':
+            if key != "is_deleted":
                 raw_queryset = raw_queryset.filter(**{key: value})
 
         # 复制其他查询条件
-        if hasattr(self, '_q_objects') and self._q_objects:
+        if hasattr(self, "_q_objects") and self._q_objects:
             for q_obj in self._q_objects:
                 raw_queryset = raw_queryset.filter(q_obj)
         return raw_queryset
@@ -59,8 +59,7 @@ class SoftDeleteQuerySet[T: Model](QuerySet[T]):
         raw_queryset = self._copy_raw_queryset()
         # 只恢复已删除的记录
         return raw_queryset.filter(is_deleted=True).update(
-            is_deleted=False,
-            delete_time=None
+            is_deleted=False, delete_time=None
         )
 
     def include_deleted(self) -> Self:

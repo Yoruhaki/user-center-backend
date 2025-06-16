@@ -10,5 +10,5 @@ class ResultUtils(metaclass=NoInstantiableMeta):
             code=StatusCode.SUCCESS.value.code,
             data=data,
             message=StatusCode.SUCCESS.value.message,
-            description=description
+            description=description,
         )
